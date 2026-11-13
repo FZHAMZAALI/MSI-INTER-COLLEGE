@@ -60,7 +60,7 @@
     const h = location.hash.replace("#", "");
     if (h.startsWith("payresult=")) return handlePayResult(h);
     if (h === "track") return show("track");
-    if (!MSI.auth.isReady) return;                 // wait for Firebase
+    if (!MSI.auth.isReady) return;                 // wait for Google Sign-in
     if (!MSI.auth.user) return show("auth");
     if (h === "apply" && S().admissions_open !== false) { resetWizard(); return show("apply"); }
     if (h === "payment" && payApp) return show("payment");
@@ -75,13 +75,8 @@
     else if (btn.dataset.html) { btn.innerHTML = btn.dataset.html; btn.disabled = false; }
   }
 
-  /* ---------- Auth (Firebase Google Sign-in) ---------- */
-  $("#googleBtn").addEventListener("click", async e => {
-    const btn = e.currentTarget; busy(btn, true, "Opening Google…");
-    try { await MSI.auth.signIn(); }
-    catch (err) { toast(err.message, "error"); }
-    finally { busy(btn, false); }
-  });
+  /* ---------- Auth (Sign in with Google + One Tap) ---------- */
+  MSI.auth.renderButton($("#googleBtn"), { text: "continue_with" });
   $("#logoutBtn").addEventListener("click", async () => {
     await MSI.auth.signOut(); toast("Signed out."); history.replaceState(null, "", "#"); route();
   });
@@ -99,7 +94,7 @@
   });
   MSI.auth.ready().then(ok => {
     if (!ok) {
-      $("#googleBtn").disabled = true;
+      $("#googleBtn").innerHTML = "";
       $("#modeNotice").insertAdjacentHTML("afterbegin", '<div class="alert alert-warn" style="margin-bottom:16px"><i class="fas fa-triangle-exclamation"></i><div><strong>Google Sign-in is being set up.</strong> Online registration will open shortly — you can still <a href="#track"><b>track an application</b></a> or contact the office.</div></div>');
     }
   });

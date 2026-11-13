@@ -994,3 +994,6 @@ html.hc a { text-decoration: underline; }
 .gov-text h1.gov-title-en { font-family: var(--font-display); font-weight: 600; letter-spacing: -.01em; }
 .gov-text .gov-en { font-family: var(--font-hindi); text-transform: none; letter-spacing: 0; font-weight: 400; }
 .brand-hi.brand-en-name { font-family: var(--font-display); font-weight: 600; font-size: 18px; }
+
+.gis-btn { display: flex; justify-content: center; min-height: 44px; align-items: center; }
+.header-actions a.icon-btn { overflow: hidden; }
