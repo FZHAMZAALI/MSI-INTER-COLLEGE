@@ -15,13 +15,14 @@
 </head>
 <body class="portal-body">
 
-<div class="portal-topbar">
+<div class="tricolor" aria-hidden="true"></div>
+<div class="portal-topbar gov-topbar">
   <div class="container">
-    <a href="index.html" class="brand">
-      <img src="assets/img/crest.svg" alt="" class="brand-crest" width="42" height="42">
-      <span class="brand-text"><span class="brand-hi">M.S.I. Inter College</span><span class="brand-en">Student Portal</span></span>
+    <a href="index.html" class="gov-brand">
+      <img src="images/up_emblem.svg" alt="उत्तर प्रदेश सरकार" class="gov-emblem-sm" width="44" height="44">
+      <span class="brand-text"><span class="gov-label-sm">उत्तर प्रदेश सरकार · Govt. of Uttar Pradesh</span><span class="brand-hi">मियाँ साहब इस्लामिया इण्टर कॉलेज, गोरखपुर</span></span>
     </a>
-    <a href="index.html" class="back"><i class="fas fa-arrow-left"></i> <span>Back to website</span></a>
+    <a href="index.html" class="back"><i class="fas fa-arrow-left"></i> <span class="hide-sm">Back to website</span></a>
   </div>
 </div>
 
@@ -105,7 +106,8 @@
             <div class="stepper-item active"><span class="stepper-dot">1</span><span class="stepper-label">Student</span></div>
             <div class="stepper-item"><span class="stepper-dot">2</span><span class="stepper-label">Parents &amp; Contact</span></div>
             <div class="stepper-item"><span class="stepper-dot">3</span><span class="stepper-label">Academics</span></div>
-            <div class="stepper-item"><span class="stepper-dot">4</span><span class="stepper-label">Review</span></div>
+            <div class="stepper-item"><span class="stepper-dot">4</span><span class="stepper-label">Documents</span></div>
+            <div class="stepper-item"><span class="stepper-dot">5</span><span class="stepper-label">Review</span></div>
           </div>
 
           <form id="applyForm" novalidate>
@@ -125,7 +127,10 @@
                 <div class="field"><label for="aadhaar">Aadhaar number <span class="hi">(optional)</span></label><input id="aadhaar" name="aadhaar" inputmode="numeric" maxlength="12" pattern="[0-9]{12}" autocomplete="off"><span class="field-error">Aadhaar must be 12 digits</span></div>
                 <div class="field"><label for="category">Category <span class="req">*</span></label>
                   <select id="category" name="category" required><option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select><span class="field-error">Please select</span></div>
-                <div class="field"><label for="religion">Religion <span class="hi">(optional)</span></label>
+                <div class="field"><label for="nationality">Nationality <span class="req">*</span></label><input id="nationality" name="nationality" required value="Indian"><span class="field-error">Required</span></div>
+                <div class="field"><label for="bloodGroup">Blood group</label>
+                  <select id="bloodGroup" name="bloodGroup"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                <div class="field full"><label for="religion">Religion <span class="hi">(optional)</span></label>
                   <select id="religion" name="religion"><option value="">Prefer not to say</option><option>Islam</option><option>Hinduism</option><option>Christianity</option><option>Sikhism</option><option>Buddhism</option><option>Jainism</option><option>Other</option></select></div>
               </div>
             </div>
@@ -138,6 +143,8 @@
                 <div class="field"><label for="fatherName">Father's / Guardian's name <span class="req">*</span></label><input id="fatherName" name="fatherName" required minlength="3"><span class="field-error">Required</span></div>
                 <div class="field"><label for="motherName">Mother's name <span class="req">*</span></label><input id="motherName" name="motherName" required minlength="3"><span class="field-error">Required</span></div>
                 <div class="field"><label for="guardianOccupation">Guardian's occupation</label><input id="guardianOccupation" name="guardianOccupation"></div>
+                <div class="field"><label for="annualIncome">Annual family income</label>
+                  <select id="annualIncome" name="annualIncome"><option value="">Select</option><option>Below ₹1 lakh</option><option>₹1 – 2.5 lakh</option><option>₹2.5 – 5 lakh</option><option>Above ₹5 lakh</option></select></div>
                 <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"><span class="field-error">Enter a valid email</span></div>
                 <div class="field"><label for="phone">Mobile <span class="req">*</span></label><input id="phone" name="phone" type="tel" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" required autocomplete="tel-national"><span class="field-error">Enter a valid 10-digit mobile</span></div>
                 <div class="field"><label for="altPhone">Alternate mobile</label><input id="altPhone" name="altPhone" type="tel" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}"><span class="field-error">Enter a valid 10-digit mobile</span></div>
@@ -155,11 +162,9 @@
                 <div class="field"><label for="applyClass">Admission sought in <span class="req">*</span></label>
                   <select id="applyClass" name="applyClass" required>
                     <option value="">Select class</option>
-                    <optgroup label="Pre-Primary"><option data-g="pre-primary">Pre-Nursery</option><option data-g="pre-primary">Nursery</option><option data-g="pre-primary">KG</option></optgroup>
-                    <optgroup label="Primary"><option data-g="primary">Class 1</option><option data-g="primary">Class 2</option><option data-g="primary">Class 3</option><option data-g="primary">Class 4</option><option data-g="primary">Class 5</option></optgroup>
-                    <optgroup label="Middle"><option data-g="middle">Class 6</option><option data-g="middle">Class 7</option><option data-g="middle">Class 8</option></optgroup>
-                    <optgroup label="High School"><option data-g="high">Class 9</option><option data-g="high">Class 10</option></optgroup>
-                    <optgroup label="Intermediate"><option data-g="inter">Class 11</option><option data-g="inter">Class 12</option></optgroup>
+                    <optgroup label="Middle"><option>Class 6</option><option>Class 7</option><option>Class 8</option></optgroup>
+                    <optgroup label="High School"><option>Class 9</option><option>Class 10</option></optgroup>
+                    <optgroup label="Intermediate"><option>Class 11</option><option>Class 12</option></optgroup>
                   </select><span class="field-error">Please select a class</span></div>
                 <div class="field"><label for="medium">Medium <span class="req">*</span></label>
                   <select id="medium" name="medium" required><option value="">Select</option><option>Hindi</option><option>English</option></select><span class="field-error">Please select</span></div>
@@ -183,8 +188,36 @@
               </div>
             </div>
 
-            <!-- Step 4 -->
+            <!-- Step 4: Documents -->
             <div class="form-step" data-step="4">
+              <h2>Photo &amp; documents</h2>
+              <p>फोटो एवं दस्तावेज़ अपलोड करें — JPG / PNG / PDF. Photos are compressed automatically.</p>
+              <div class="upload-grid">
+                <div class="field upload-field" data-upload="photo" data-required-upload>
+                  <label>Student photograph <span class="req">*</span></label>
+                  <label class="upload-box upload-photo">
+                    <input type="file" accept="image/*" capture="user" hidden>
+                    <span class="upload-empty"><i class="fas fa-user-plus"></i><strong>Add photo</strong><small>Passport size, face clearly visible</small></span>
+                    <img alt="Student photo preview" hidden>
+                  </label>
+                  <span class="field-error">Student photo is required</span>
+                </div>
+                <div class="upload-docs">
+                  <div class="field upload-field" data-upload="marksheet"><label>Previous mark sheet</label>
+                    <label class="upload-box"><input type="file" accept="image/*,application/pdf" hidden><span class="upload-empty row"><i class="fas fa-file-lines"></i><span><strong>Upload mark sheet</strong><small>Image or PDF, max 3 MB</small></span></span><span class="upload-done" hidden></span></label></div>
+                  <div class="field upload-field" data-upload="aadhaarDoc"><label>Aadhaar card</label>
+                    <label class="upload-box"><input type="file" accept="image/*,application/pdf" hidden><span class="upload-empty row"><i class="fas fa-id-card"></i><span><strong>Upload Aadhaar</strong><small>Image or PDF, max 3 MB</small></span></span><span class="upload-done" hidden></span></label></div>
+                  <div class="field upload-field" data-upload="tc"><label>Transfer certificate (T.C.)</label>
+                    <label class="upload-box"><input type="file" accept="image/*,application/pdf" hidden><span class="upload-empty row"><i class="fas fa-file-export"></i><span><strong>Upload T.C.</strong><small>If available</small></span></span><span class="upload-done" hidden></span></label></div>
+                  <div class="field upload-field" data-upload="birthCert"><label>Birth certificate</label>
+                    <label class="upload-box"><input type="file" accept="image/*,application/pdf" hidden><span class="upload-empty row"><i class="fas fa-cake-candles"></i><span><strong>Upload birth certificate</strong><small>Image or PDF, max 3 MB</small></span></span><span class="upload-done" hidden></span></label></div>
+                </div>
+              </div>
+              <div class="alert alert-info" style="margin-top:18px"><i class="fas fa-circle-info"></i><div>Documents are optional online but originals must be shown at the office for verification.</div></div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="form-step" data-step="5">
               <h2>Review &amp; submit</h2>
               <p>कृपया सभी विवरण जाँच लें — check everything before submitting.</p>
               <div class="review-grid" id="reviewGrid"></div>
@@ -199,18 +232,60 @@
           </form>
         </section>
 
-        <!-- ===== View: Success ===== -->
-        <section class="card" data-view="success" hidden>
+        <!-- ===== View: Payment ===== -->
+        <section class="card" data-view="payment" hidden>
+          <div class="pay-head">
+            <div>
+              <small class="muted-label">Registration ID</small>
+              <div class="reg-id-inline" id="payRegId">—</div>
+              <p class="muted" id="payStudent">—</p>
+            </div>
+            <div class="pay-amount"><small>Amount payable</small><strong id="payAmount">₹0</strong></div>
+          </div>
+          <div class="fee-box" id="payFeeBox" style="margin-top:18px"></div>
+
+          <h3 class="pay-title">Choose a payment method · भुगतान का माध्यम चुनें</h3>
+          <div class="pay-methods" id="payMethods">
+            <button type="button" class="pay-method" data-method="razorpay" hidden><i class="fas fa-credit-card"></i><span><strong>Pay online</strong><small>UPI · Debit/Credit card · Net banking · Wallet</small></span><span class="pay-badge">Instant</span></button>
+            <button type="button" class="pay-method" data-method="upi" hidden><i class="fas fa-qrcode"></i><span><strong>UPI / QR code</strong><small>GPay · PhonePe · Paytm · BHIM — direct to college account</small></span></button>
+            <button type="button" class="pay-method" data-method="office" hidden><i class="fas fa-building-columns"></i><span><strong>Pay at college office</strong><small>Cash / DD at the fee counter, Mon–Sat 8 AM – 4 PM</small></span></button>
+            <button type="button" class="pay-method" data-method="demo" hidden><i class="fas fa-flask"></i><span><strong>Test payment (demo)</strong><small>Simulates a successful payment — only while the backend is not connected</small></span></button>
+          </div>
+
+          <div class="pay-panel" data-pay-panel="upi" hidden>
+            <div class="upi-wrap">
+              <div class="upi-qr" id="upiQr"></div>
+              <div>
+                <p style="font-weight:600">Scan with any UPI app and pay <span id="upiAmt"></span></p>
+                <p class="muted" style="margin:4px 0 12px">UPI ID: <strong id="upiId"></strong> · Payee: <span id="upiName"></span></p>
+                <a class="btn btn-sm btn-gold" id="upiIntent"><i class="fas fa-mobile-screen"></i> Open UPI app</a>
+                <form id="upiForm" class="form-grid" style="margin-top:18px" novalidate>
+                  <div class="field full"><label for="utr">UTR / UPI transaction ID <span class="req">*</span></label><input id="utr" name="utr" required pattern="[A-Za-z0-9]{10,22}" placeholder="12-digit UTR from your UPI app" autocomplete="off"><span class="field-error">Enter the 12-digit UTR / reference number</span></div>
+                  <div class="field full upload-field" data-upload="upiProof"><label>Payment screenshot <span class="hi">(optional)</span></label>
+                    <label class="upload-box"><input type="file" accept="image/*" hidden><span class="upload-empty row"><i class="fas fa-image"></i><span><strong>Attach screenshot</strong><small>Helps the office verify faster</small></span></span><span class="upload-done" hidden></span></label></div>
+                  <div class="full"><button class="btn btn-block" type="submit"><i class="fas fa-check"></i> I have paid — submit UTR</button></div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <p class="muted" style="font-size:13px;margin-top:18px;text-align:center"><i class="fas fa-lock"></i> Payments are processed by RBI-regulated gateways / your bank. The college never asks for your card PIN or OTP.</p>
+          <div style="text-align:center;margin-top:10px"><button class="btn btn-sm btn-outline" data-go="dashboard">Pay later — go to dashboard</button></div>
+        </section>
+
+        <!-- ===== View: Done ===== -->
+        <section class="card" data-view="done" hidden>
           <div class="success-panel">
-            <div class="success-icon"><i class="fas fa-check"></i></div>
-            <h2 style="font-size:1.8rem;color:var(--emerald-900)">Registration submitted!</h2>
-            <p style="color:var(--ink-500);margin-top:8px">पंजीकरण सफलतापूर्वक जमा हुआ। Save your Registration ID:</p>
-            <div class="reg-id" id="successId">—</div>
-            <p style="color:var(--ink-500);font-size:14.5px;max-width:520px;margin:0 auto">Visit the college office with original documents and this slip for verification. Use your Registration ID + mobile number to track status.</p>
+            <div class="success-icon" id="doneIcon"><i class="fas fa-check"></i></div>
+            <h2 style="font-size:1.8rem;color:var(--emerald-900)" id="doneTitle">Registration complete!</h2>
+            <p class="muted" style="margin-top:8px" id="doneText">—</p>
+            <div class="reg-id" id="doneId">—</div>
+            <div id="donePay"></div>
             <div class="hero-cta" style="justify-content:center">
-              <button class="btn btn-gold" id="printBtn"><i class="fas fa-print"></i> Print / Save slip</button>
-              <a class="btn btn-outline" id="waShare" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> Send to WhatsApp</a>
-              <button class="btn" data-go="dashboard"><i class="fas fa-gauge"></i> Go to dashboard</button>
+              <button class="btn btn-gold" data-print-form><i class="fas fa-print"></i> Print application form</button>
+              <button class="btn btn-outline" data-print-receipt hidden><i class="fas fa-receipt"></i> Fee receipt</button>
+              <a class="btn btn-outline" id="waShare" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> Share</a>
+              <button class="btn" data-go="dashboard"><i class="fas fa-gauge"></i> Dashboard</button>
             </div>
           </div>
         </section>
@@ -235,15 +310,16 @@
           <h3><i class="fas fa-list-check"></i> How it works</h3>
           <ul>
             <li><i class="fas fa-circle-check"></i> Create a free account (1 min)</li>
-            <li><i class="fas fa-circle-check"></i> Fill the 4-step form (5–8 min)</li>
+            <li><i class="fas fa-circle-check"></i> Fill the form &amp; upload photo (5–8 min)</li>
             <li><i class="fas fa-circle-check"></i> Get your Registration ID instantly</li>
-            <li><i class="fas fa-circle-check"></i> Verify documents at the office</li>
+            <li><i class="fas fa-circle-check"></i> Pay the fee online, by UPI or at office</li>
+            <li><i class="fas fa-circle-check"></i> Print form &amp; receipt, verify documents</li>
             <li><i class="fas fa-circle-check"></i> Track status online anytime</li>
           </ul>
         </div>
         <div class="card">
           <h3><i class="fas fa-headset"></i> Need help?</h3>
-          <p style="font-size:14px;color:var(--ink-500)">Office: Mon–Sat, 8 AM – 4 PM</p>
+          <p style="font-size:14px;color:var(--ink-500)">Office: Mon–Sat, 8 AM – 4 PM<br>Forgot password? Call the office to reset it.</p>
           <div style="display:grid;gap:10px;margin-top:14px">
             <a href="tel:+919169252529" class="btn btn-sm btn-outline"><i class="fas fa-phone"></i> +91 91692 52529</a>
             <a href="https://wa.me/919169252529" target="_blank" rel="noopener" class="btn btn-sm"><i class="fab fa-whatsapp"></i> WhatsApp</a>
@@ -258,7 +334,7 @@
 </main>
 
 <!-- Printable registration slip -->
-<div class="receipt" id="receipt"></div>
+<div class="receipt" id="printArea"></div>
 <div class="toast-stack" id="toasts" aria-live="polite"></div>
 
 <script src="assets/js/config.js"></script>

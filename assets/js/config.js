@@ -42,6 +42,27 @@ window.MSI_CONFIG = {
      application in a Google Sheet) and paste the Web App URL here. */
   APPS_SCRIPT_URL: "",
 
+  /* ---------------- Online fee payment ----------------
+     Three ways a parent can pay after submitting the form:
+     1. RAZORPAY  — cards, UPI, net banking, wallets. Create an account at
+        https://dashboard.razorpay.com, complete KYC with the school's bank
+        account, then Settings → API Keys. Put the KEY ID here and the KEY
+        SECRET only in the Apps Script (never in this file).
+     2. UPI QR    — free, direct to the school's bank account. Parent pays
+        by scanning the QR and enters the UTR number; the office verifies
+        it in the admin panel.
+     3. AT OFFICE — cash / DD at the fee counter.
+     Leave RAZORPAY_KEY_ID and UPI_ID empty to hide those options. */
+  PAYMENT: {
+    RAZORPAY_KEY_ID: "",            // e.g. "rzp_live_XXXXXXXXXXXX"
+    UPI_ID: "",                     // e.g. "msiintercollege@sbi"
+    UPI_PAYEE_NAME: "MSI INTER COLLEGE GORAKHPUR",
+    ALLOW_PAY_AT_OFFICE: true,
+    /* Demo-only test payment button, shown ONLY when no backend is
+       connected — so the full flow can be tried before going live. */
+    DEMO_PAYMENT: true
+  },
+
   /* Admin panel passcode (admin.html). With APPS_SCRIPT_URL set, the same
      value must be set as ADMIN_KEY in the Apps Script — it is then checked
      server-side. In local mode it only gates this browser's demo data. */
@@ -52,11 +73,10 @@ window.MSI_CONFIG = {
   CONTACT_PHONE: "+91 91692 52529",
   WHATSAPP: "919169252529",
 
-  /* Fee estimate shown on the registration form (₹). Edit to match the
-     current fee notice. "lab" applies to science/computer lab users. */
+  /* Fee charged at registration (₹), by class group. This is the amount
+     collected online. Keep the same table in backend/google-apps-script.gs
+     (the server recomputes the amount so it cannot be tampered with). */
   FEES: {
-    "pre-primary": { admission: 250, tuition: 350, lab: 0,   library: 150 },
-    "primary":     { admission: 250, tuition: 350, lab: 0,   library: 150 },
     "middle":      { admission: 250, tuition: 350, lab: 0,   library: 150 },
     "high":        { admission: 250, tuition: 350, lab: 200, library: 150 },
     "inter":       { admission: 250, tuition: 350, lab: 200, library: 150 }

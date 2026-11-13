@@ -10,8 +10,8 @@ Static site — no build step. Open `index.html` or host the folder on any stati
 | File | Purpose |
 |---|---|
 | `index.html` | Main website: about, leadership, programs, toppers, facilities, student life, admissions, notices, gallery, FAQ, contact + Google Map |
-| `register.html` | Student portal: create account / login, 4-step admission registration, Registration ID + printable slip, dashboard with status tracker, track by Reg. ID + mobile |
-| `admin.html` | Staff panel: list / search / filter registrations, update status with a note, WhatsApp the parent, export CSV |
+| `register.html` | Student portal: account / login, 5-step admission form with photo & document upload, fee payment (Razorpay, UPI QR, at office), printable application form & fee receipt, dashboard with status tracker, track by Reg. ID + mobile |
+| `admin.html` | Staff panel: search / filter, view photo & documents, verify UPI payments, fee-collection totals, update status with a note, reset parent passwords, WhatsApp the parent, export CSV |
 
 ## Configuration — `assets/js/config.js`
 
@@ -26,8 +26,8 @@ Static site — no build step. Open `index.html` or host the folder on any stati
 Without a key the site uses a keyless Google Maps embed automatically, with the same
 route buttons (railway station, bus stand, airport, "from my location").
 
-### Registration backend
-See [`backend/README.md`](backend/README.md) to store applications in a Google Sheet.
+### Registration backend & payments
+See [`backend/README.md`](backend/README.md) — Google Sheet + Drive backend, UPI and Razorpay setup.
 
 ### Other settings
 `SESSION`, `CONTACT_PHONE`, `WHATSAPP`, and the `FEES` table shown on the form.

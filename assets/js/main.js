@@ -28,13 +28,29 @@
   const header = $("#siteHeader");
   const toTop = $("#toTop");
   const onScroll = () => {
-    const sc = window.scrollY > 24;
+    const sc = header ? header.getBoundingClientRect().top <= 0 && window.scrollY > 40 : false;
     header && header.classList.toggle("is-scrolled", sc);
     toTop && toTop.classList.toggle("show", window.scrollY > 900);
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
   toTop && toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  /* ---------- Accessibility: text size & contrast (GIGW) ---------- */
+  const root = document.documentElement;
+  const save = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
+  const load = k => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+  let fs = +(load("msi.fs") || 0);
+  const applyFs = () => { document.body.style.zoom = ""; root.style.fontSize = (100 + fs * 8) + "%"; document.body.style.fontSize = (16 + fs * 1.5) + "px"; };
+  if (fs) applyFs();
+  if (load("msi.hc") === "1") root.classList.add("hc");
+  $$("[data-fs]").forEach(b => b.addEventListener("click", () => {
+    const d = +b.dataset.fs; fs = d === 0 ? 0 : Math.max(-1, Math.min(2, fs + d));
+    applyFs(); save("msi.fs", String(fs));
+  }));
+  $$("[data-hc]").forEach(b => b.addEventListener("click", () => {
+    const on = root.classList.toggle("hc"); save("msi.hc", on ? "1" : "0");
+  }));
 
   /* ---------- Mobile drawer ---------- */
   const drawer = $("#mobileDrawer");
