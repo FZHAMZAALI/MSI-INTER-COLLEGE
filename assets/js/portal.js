@@ -231,17 +231,19 @@
   const maskAadhaar = v => v ? "XXXX XXXX " + String(v).slice(-4) : "";
   const flat = a => Object.assign({}, a.data || {}, a);
 
+  /* Fee charged at registration. Currently only the registration form fee;
+     older applications may carry a detailed breakup, so all known heads are labelled. */
+  const FEE_LABELS = { form: "Registration form fee", admission: "Admission fee", tuition: "Tuition fee (first month)", lab: "Lab / computer fee", library: "Library &amp; sports fund" };
   function feesFor(cls) {
     const f = (S().fees || {})[CLASS_GROUP[cls]] || {};
-    return { admission: +f.admission || 0, tuition: +f.tuition || 0, lab: +f.lab || 0, library: +f.library || 0 };
+    const out = {}; Object.keys(f).forEach(k => { if (+f[k] > 0) out[k] = +f[k]; });
+    return out;
   }
+  const feeSum = f => Object.values(f || {}).reduce((t, v) => t + (+v || 0), 0);
   function feeBoxHtml(f, total) {
-    total = total != null ? total : f.admission + f.tuition + f.lab + f.library;
+    f = f || {}; total = total != null ? total : feeSum(f);
     return '<div style="font-weight:700;color:var(--emerald-900);margin-bottom:8px"><i class="fas fa-indian-rupee-sign"></i> Fee at registration</div>' +
-      (f.admission ? '<div class="fee-row"><span>Admission fee</span><span>' + rupee(f.admission) + '</span></div>' : "") +
-      (f.tuition ? '<div class="fee-row"><span>Tuition (first month)</span><span>' + rupee(f.tuition) + '</span></div>' : "") +
-      (f.lab ? '<div class="fee-row"><span>Lab / computer fee</span><span>' + rupee(f.lab) + '</span></div>' : "") +
-      (f.library ? '<div class="fee-row"><span>Library &amp; sports fund</span><span>' + rupee(f.library) + '</span></div>' : "") +
+      Object.keys(f).filter(k => +f[k] > 0).map(k => '<div class="fee-row"><span>' + (FEE_LABELS[k] || esc(k)) + '</span><span>' + rupee(f[k]) + '</span></div>').join("") +
       '<div class="fee-row total"><span>Total payable</span><span>' + rupee(total) + '</span></div>';
   }
   function renderReview() {
@@ -260,7 +262,7 @@
     $("#payRegId").textContent = app.regId;
     $("#payStudent").textContent = app.studentName + " · " + app.applyClass + (app.stream ? " (" + app.stream + ")" : "");
     $("#payAmount").textContent = rupee(app.feeTotal);
-    $("#payFeeBox").innerHTML = feeBoxHtml(Object.assign({ admission: 0, tuition: 0, lab: 0, library: 0 }, app.feeBreakup || {}), app.feeTotal);
+    $("#payFeeBox").innerHTML = feeBoxHtml(app.feeBreakup || {}, app.feeTotal);
     const p = S().payment || {};
     $('[data-method="payu"]').hidden = !p.payuEnabled;
     $('[data-method="office"]').hidden = p.officeEnabled === false || app.paymentStatus === "office";
@@ -364,7 +366,7 @@
       "<div class='r-office'><b>For office use:</b> Documents verified ☐ &nbsp; Fee received ☐ &nbsp; Admission No. ____________ &nbsp; Section ______</div>");
   }
   function printReceipt(a) {
-    const f = Object.assign({ admission: 0, tuition: 0, lab: 0, library: 0 }, a.feeBreakup || {});
+    const f = a.feeBreakup || {};
     const row = (l, v) => v ? "<tr><td>" + l + "</td><td style='text-align:right'>" + rupee(v) + "</td></tr>" : "";
     doPrint(GOV_HEAD +
       "<div class='r-doc-title'>FEE RECEIPT</div>" +
@@ -374,7 +376,7 @@
       "<tr><td class='k'>Class</td><td>" + esc(a.applyClass) + (a.stream ? " — " + esc(a.stream) : "") + " · Session " + esc(a.session) + "</td></tr>" +
       "<tr><td class='k'>Payment method</td><td>" + esc(a.paymentMethod || "") + "</td></tr></table>" +
       "<table style='margin-top:14px'><tr><th style='text-align:left'>Particulars</th><th style='text-align:right'>Amount</th></tr>" +
-      row("Admission fee", f.admission) + row("Tuition fee (first month)", f.tuition) + row("Lab / computer fee", f.lab) + row("Library &amp; sports fund", f.library) +
+      Object.keys(f).map(k => row(FEE_LABELS[k] || esc(k), +f[k])).join("") +
       "<tr><td><b>Total paid</b></td><td style='text-align:right'><b>" + rupee(a.feeTotal) + "</b></td></tr></table>" +
       "<p class='r-decl'>This is a computer-generated receipt for a payment recorded in the college's admission system and does not require a signature.</p>");
   }
