@@ -4,114 +4,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
-  <title>Admissions Admin | M.S.I. Inter College</title>
+  <title>Admin Panel | M.S.I. Inter College</title>
   <meta name="theme-color" content="#0a3326">
   <link rel="icon" href="assets/img/crest.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
-<body class="portal-body">
+<body class="adm-body">
 
-<div class="tricolor" aria-hidden="true"></div>
-<div class="portal-topbar gov-topbar">
-  <div class="container">
-    <a href="index.html" class="gov-brand">
-      <img src="images/up_emblem.svg" alt="उत्तर प्रदेश सरकार" class="gov-emblem-sm" width="44" height="44">
-      <span class="brand-text"><span class="gov-label-sm">प्रवेश प्रबंधन · Admissions Admin</span><span class="brand-hi">मियाँ साहब इस्लामिया इण्टर कॉलेज</span></span>
-    </a>
-    <button class="btn btn-sm btn-ghost-light" id="adminLogout" hidden><i class="fas fa-right-from-bracket"></i> Logout</button>
+<!-- ================= Sign-in screen ================= -->
+<div class="adm-gate" id="gate">
+  <div class="tricolor" aria-hidden="true"></div>
+  <div class="adm-gate-card">
+    <div class="adm-gate-logos">
+      <img src="images/up_emblem.svg" alt="Uttar Pradesh emblem" width="64" height="64">
+      <img src="assets/img/crest.svg" alt="" width="64" height="64">
+      <img src="images/upboard_official.png" alt="UP Board" width="64" height="64">
+    </div>
+    <span class="adm-gate-label">Government of Uttar Pradesh · Govt. Aided Institution</span>
+    <h1 class="adm-gate-en">Miyan Sahab Islamia Inter College</h1>
+    <p class="adm-gate-sub">Admin Panel</p>
+    <div id="gateBody">
+      <p class="muted" id="gateMsg"><i class="fas fa-spinner fa-spin"></i> Loading…</p>
+    </div>
+    <a href="index.html" class="adm-gate-back"><i class="fas fa-arrow-left"></i> Back to website</a>
   </div>
 </div>
 
-<section class="portal-hero">
-  <div class="container">
-    <span class="eyebrow">Staff only</span>
-    <h1 style="margin-top:12px">Admission registrations</h1>
-    <p>Review applications and documents, verify fee payments, update status and export to Excel.</p>
-  </div>
-</section>
-
-<main class="portal-main" id="main">
-  <div class="container">
-    <!-- Login -->
-    <section class="card" id="adminLogin" style="max-width:460px;margin:0 auto">
-      <h2 style="font-size:1.4rem;color:var(--emerald-900)"><i class="fas fa-lock" style="color:var(--gold-600)"></i> Staff login</h2>
-      <p style="color:var(--ink-500);font-size:14.5px;margin:6px 0 20px">Enter the admin passcode.</p>
-      <form id="adminLoginForm" novalidate>
-        <div class="field"><label for="adminPass">Passcode</label>
-          <div class="input-icon"><i class="fas fa-key"></i><input id="adminPass" type="password" required autocomplete="current-password"></div>
-          <span class="field-error">Enter the passcode</span></div>
-        <button class="btn btn-block" style="margin-top:16px" type="submit"><i class="fas fa-right-to-bracket"></i> Login</button>
-      </form>
-    </section>
-
-    <!-- Panel -->
-    <section id="adminPanel" hidden>
-      <div id="adminMode"></div>
-      <div class="stat-cards">
-        <div class="stat-card"><small>Total</small><strong id="stTotal">0</strong></div>
-        <div class="stat-card"><small>New</small><strong id="stNew">0</strong></div>
-        <div class="stat-card"><small>Under review</small><strong id="stReview">0</strong></div>
-        <div class="stat-card"><small>Approved</small><strong id="stApproved">0</strong></div>
-      </div>
-      <div class="stat-cards" style="margin-top:16px">
-        <div class="stat-card"><small>Fee collected</small><strong id="stCollected">₹0</strong></div>
-        <div class="stat-card"><small>Fees paid</small><strong id="stPaid">0</strong></div>
-        <div class="stat-card"><small>UPI to verify</small><strong id="stVerify" style="color:var(--gold-600)">0</strong></div>
-        <div class="stat-card"><small>Unpaid / at office</small><strong id="stUnpaid">0</strong></div>
-      </div>
-
-      <div class="admin-toolbar">
-        <div class="input-icon"><i class="fas fa-magnifying-glass"></i><input class="input" id="q" type="search" placeholder="Search name, ID, mobile, father's name…"></div>
-        <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="submitted">New</option><option value="review">Under review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
-        <select id="fPay" aria-label="Filter by payment"><option value="">All payments</option><option value="paid">Paid</option><option value="verification">UPI to verify</option><option value="office">Pay at office</option><option value="unpaid">Unpaid</option><option value="failed">Failed</option></select>
-        <select id="fClass" aria-label="Filter by class"><option value="">All classes</option></select>
-        <button class="btn btn-sm btn-outline" id="refreshBtn"><i class="fas fa-rotate"></i> Refresh</button>
-        <button class="btn btn-sm" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
-        <button class="btn btn-sm btn-outline" id="resetPwBtn"><i class="fas fa-key"></i> Reset password</button>
-      </div>
-
-      <div class="table-wrap">
-        <table class="data">
-          <thead><tr><th>Reg. ID</th><th>Student</th><th>Class</th><th>Mobile</th><th>Submitted</th><th>Fee</th><th>Status</th><th></th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-</main>
-
-<!-- Detail modal -->
-<div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
-  <div class="modal-panel">
-    <div class="modal-head"><h3 id="dmTitle">Application</h3><button class="icon-btn" data-close-modal aria-label="Close"><i class="fas fa-xmark"></i></button></div>
-    <div class="modal-body">
-      <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
-        <div id="dmPhoto"></div>
-        <div style="flex:1;min-width:240px"><div class="kv" id="dmBody"></div><div class="doc-links" id="dmDocs"></div></div>
-      </div>
-      <div id="dmPayBox" class="fee-box" style="margin-top:20px"></div>
-      <div class="form-grid" style="margin-top:22px;padding-top:20px;border-top:1px solid var(--line)">
-        <div class="field"><label for="dmStatus">Update status</label>
-          <select id="dmStatus"><option value="submitted">New / Submitted</option><option value="review">Under review</option><option value="approved">Approved</option><option value="rejected">Not approved</option></select></div>
-        <div class="field"><label for="dmNote">Note to applicant</label><input id="dmNote" maxlength="300" placeholder="e.g. Bring original T.C. on Monday"></div>
-      </div>
+<!-- ================= App shell ================= -->
+<div class="adm-shell" id="shell" hidden>
+  <aside class="adm-side" id="side">
+    <a href="index.html" class="adm-brand" target="_blank" rel="noopener">
+      <img src="images/up_emblem.svg" alt="" width="40" height="40">
+      <span><strong>M.S.I. Inter College</strong><small>Admin Panel</small></span>
+    </a>
+    <nav class="adm-nav" id="admNav">
+      <div class="adm-nav-label">Overview</div>
+      <a href="#dashboard" data-page="dashboard"><i class="fas fa-gauge-high"></i> Dashboard</a>
+      <div class="adm-nav-label">Admissions</div>
+      <a href="#applications" data-page="applications"><i class="fas fa-file-signature"></i> Applications <span class="adm-count" id="cntApps"></span></a>
+      <a href="#payments" data-page="payments"><i class="fas fa-indian-rupee-sign"></i> Payments</a>
+      <a href="#enquiries" data-page="enquiries"><i class="fas fa-envelope-open-text"></i> Enquiries <span class="adm-count alert" id="cntEnq"></span></a>
+      <a href="#users" data-page="users"><i class="fas fa-users"></i> Parent accounts</a>
+      <div class="adm-nav-label">Website content</div>
+      <a href="#notices" data-page="notices"><i class="fas fa-bullhorn"></i> Notices</a>
+      <a href="#gallery" data-page="gallery"><i class="fas fa-images"></i> Gallery</a>
+      <a href="#toppers" data-page="toppers"><i class="fas fa-trophy"></i> Toppers</a>
+      <a href="#leaders" data-page="leaders"><i class="fas fa-user-tie"></i> Leadership</a>
+      <div class="adm-nav-label">System</div>
+      <a href="#settings" data-page="settings"><i class="fas fa-sliders"></i> Settings</a>
+      <a href="#staff" data-page="staff"><i class="fas fa-user-shield"></i> Staff access</a>
+    </nav>
+    <div class="adm-side-foot">
+      <a href="index.html" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square"></i> View website</a>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-sm btn-outline" id="dmDelete" style="color:var(--danger);border-color:var(--danger);margin-right:auto"><i class="fas fa-trash"></i> Delete</button>
-      <a class="btn btn-sm btn-outline" id="dmWa" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> Message parent</a>
-      <button class="btn btn-sm" id="dmSave"><i class="fas fa-check"></i> Save status</button>
-    </div>
+  </aside>
+  <div class="adm-scrim" id="scrim"></div>
+
+  <div class="adm-main">
+    <header class="adm-top">
+      <button class="adm-icon-btn adm-menu" id="menuBtn" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      <div class="adm-top-title"><h1 id="pageTitle">Dashboard</h1><p id="pageSub"></p></div>
+      <div class="adm-top-actions">
+        <button class="adm-icon-btn" id="refreshBtn" title="Refresh" aria-label="Refresh"><i class="fas fa-rotate"></i></button>
+        <div class="adm-user" id="userChip">
+          <img id="userPhoto" alt="" referrerpolicy="no-referrer">
+          <span><strong id="userName"></strong><small id="userRole"></small></span>
+          <button class="adm-icon-btn" id="signOutBtn" title="Sign out" aria-label="Sign out"><i class="fas fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </header>
+    <main class="adm-content" id="content"></main>
   </div>
+</div>
+
+<!-- Drawer for details / forms -->
+<div class="adm-drawer" id="drawer" aria-hidden="true">
+  <div class="adm-drawer-scrim" data-close></div>
+  <section class="adm-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <header><h2 id="drawerTitle"></h2><button class="adm-icon-btn" data-close aria-label="Close"><i class="fas fa-xmark"></i></button></header>
+    <div class="adm-drawer-body" id="drawerBody"></div>
+    <footer id="drawerFoot"></footer>
+  </section>
 </div>
 
 <div class="toast-stack" id="toasts" aria-live="polite"></div>
 
 <script src="assets/js/config.js"></script>
-<script src="assets/js/store.js"></script>
+<script src="assets/js/api.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>

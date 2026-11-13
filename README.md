@@ -1,47 +1,60 @@
-# M.S.I. Inter College — Website
+# M.S.I. Inter College — Website & Admission Portal
 
 Official website of **Miyan Sahab Islamia Inter College**, Bakshipur, Gorakhpur (est. 1908).
-
-Static site — no build step. Open `index.html` or host the folder on any static host
-(GitHub Pages, Netlify, Vercel, cPanel).
+Static frontend (no build step) + Supabase backend + Firebase Google Sign-in + PayU payments.
 
 ## Pages
 
 | File | Purpose |
 |---|---|
-| `index.html` | Main website: about, leadership, programs, toppers, facilities, student life, admissions, notices, gallery, FAQ, contact + Google Map |
-| `register.html` | Student portal: account / login, 5-step admission form with photo & document upload, fee payment (Razorpay, UPI QR, at office), printable application form & fee receipt, dashboard with status tracker, track by Reg. ID + mobile |
-| `admin.html` | Staff panel: search / filter, view photo & documents, verify UPI payments, fee-collection totals, update status with a note, reset parent passwords, WhatsApp the parent, export CSV |
+| `index.html` | Public website. Ticker, stats, leadership, toppers, notices, gallery and contact details are loaded live from the database and managed in the admin panel. Contact-form messages go to Admin → Enquiries. |
+| `register.html` | Parent portal: Google Sign-in, 5-step admission form with photo/document upload, PayU online payment or pay-at-office, printable application form & fee receipt, dashboard with status tracker, track by Reg. ID + mobile. |
+| `admin.html` | Admin panel (Google Sign-in, staff only): dashboard, applications (documents, status, cash receipts), payments, enquiries, parent accounts, notices, gallery, toppers, leadership, settings (session, fees, PayU, contact, map), staff access. |
 
-## Configuration — `assets/js/config.js`
-
-### Google Maps
-1. In [Google Cloud Console](https://console.cloud.google.com/) enable **Maps JavaScript API**
-   (plus **Directions API** and **Geocoding API** for in-page routes and auto-location).
-2. Create an API key and restrict it to your domain (HTTP referrers) and those APIs.
-3. Paste it into `GOOGLE_MAPS_API_KEY`.
-4. For pin-point accuracy, right-click the college gate in Google Maps, copy the
-   coordinates, and set `CAMPUS.lat` / `CAMPUS.lng`.
-
-Without a key the site uses a keyless Google Maps embed automatically, with the same
-route buttons (railway station, bus stand, airport, "from my location").
-
-### Registration backend & payments
-See [`backend/README.md`](backend/README.md) — Google Sheet + Drive backend, UPI and Razorpay setup.
-
-### Other settings
-`SESSION`, `CONTACT_PHONE`, `WHATSAPP`, and the `FEES` table shown on the form.
-
-## Structure
+## Architecture
 
 ```
-assets/css/main.css     design system + responsive layout
-assets/js/config.js     all settings
-assets/js/main.js       navigation, animations, gallery, contact form
-assets/js/maps.js       Google Maps integration
-assets/js/store.js      data layer (localStorage or Google Sheets)
-assets/js/portal.js     student portal
-assets/js/admin.js      admin panel
-backend/                Google Apps Script for the Sheets backend
-images/                 campus photos
+Browser ──► Firebase Auth (Google Sign-in) ──► ID token
+   │
+   └──► Supabase Edge Function `api`  (verifies the Firebase token, checks staff role)
+            ├── Postgres tables (RLS on, no public policies — only the API can read/write)
+            ├── Storage: applicant-docs (private, signed URLs) · site-media (public)
+            └── PayU: hash computed server-side; `payu` function verifies the callback
+                with the reverse hash + PayU verify_payment API before marking "Paid".
 ```
+
+- Supabase project: `msi-inter-college` (ap-south-1)
+- Edge functions: `supabase/functions/api`, `supabase/functions/payu`
+- Schema: `supabase/migrations/`
+- PayU key/salt live only in the `app_secrets` table (server-side). Update them in Admin → Settings.
+
+## One-time setup
+
+### 1. Firebase (Google Sign-in)
+1. <https://console.firebase.google.com> → **Add project** → name it `msi-inter-college`.
+2. **Build → Authentication → Get started → Sign-in method → Google → Enable** (choose a support email) → Save.
+3. **Project settings (⚙) → Your apps → Web (`</>`)** → register app → copy the `firebaseConfig`
+   (`apiKey`, `authDomain`, `projectId`, `appId`). These values are public.
+4. Put them in `assets/js/config.js → FIREBASE`, and set the same `projectId` in the
+   database setting `firebase` (the API uses it to verify tokens):
+   ```sql
+   insert into settings(key, value, is_public)
+   values ('firebase', '{"apiKey":"…","authDomain":"…","projectId":"…","appId":"…"}', true)
+   on conflict (key) do update set value = excluded.value;
+   ```
+5. **Authentication → Settings → Authorized domains** → add the website's domain
+   (e.g. `fzhamzaali.github.io` or your own domain).
+
+### 2. First administrator
+Open `admin.html`, sign in with Google, and enter the one-time **setup code** you were given.
+That account becomes administrator; the code then stops working. Add other staff in
+Admin → Staff access.
+
+### 3. Hosting
+Any static host works (GitHub Pages, Netlify, Vercel, cPanel). Upload the repository root.
+
+## Configuration
+
+- `assets/js/config.js` — API URL + publishable key (already set), Firebase config, map defaults.
+- Everything else (session, admissions open/closed, fees, PayU, contact, ticker, stats,
+  map key) — **Admin → Settings**.

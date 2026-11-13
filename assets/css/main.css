@@ -972,3 +972,25 @@ html.hc a { text-decoration: underline; }
   .r-foot span { border-top: 1px solid #000; padding-top: 4px; min-width: 150px; text-align: center; }
   .r-office { margin-top: 18px; padding: 8px; border: 1px dashed #000; font-size: 11.5px; }
 }
+
+/* ==========================================================================
+   Google sign-in & live content
+   ========================================================================== */
+.google-auth { text-align: center; max-width: 440px; margin: 0 auto; padding: 12px 0 6px; }
+.google-auth-emblem { width: 64px; height: 64px; margin: 0 auto 14px; }
+.google-auth h2 { font-size: 1.6rem; color: var(--emerald-900); }
+.google-auth > p.muted { margin: 10px 0 24px; font-size: 14.5px; }
+.btn-google { display: inline-flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 52px; padding: 12px 20px; border-radius: 999px; border: 1.5px solid #dadce0; background: #fff; color: #3c4043; font-weight: 600; font-size: 15px; transition: background .2s, box-shadow .2s; }
+.btn-google:hover { background: #f8faff; box-shadow: 0 2px 10px rgba(60,64,67,.15); }
+.btn-google[disabled] { opacity: .55; pointer-events: none; }
+.leader-photo { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 6px rgba(221,180,90,.18); }
+.leader-name { margin-top: 10px; }
+.topper-photo { width: 76px; height: 76px; margin: 0 auto 14px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold-400); }
+.notice-body { font-size: 13.5px; color: var(--ink-500); margin: 4px 0 6px; white-space: pre-line; }
+.muted-on-dark { color: rgba(255,255,255,.6); }
+@media (max-width: 760px) { .leader-photo { width: 72px; height: 72px; } }
+
+/* English-first headings */
+.gov-text h1.gov-title-en { font-family: var(--font-display); font-weight: 600; letter-spacing: -.01em; }
+.gov-text .gov-en { font-family: var(--font-hindi); text-transform: none; letter-spacing: 0; font-weight: 400; }
+.brand-hi.brand-en-name { font-family: var(--font-display); font-weight: 600; font-size: 18px; }
