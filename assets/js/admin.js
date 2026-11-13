@@ -1,6 +1,6 @@
 /* ==========================================================================
    M.S.I. Inter College — Admin Panel
-   Google Sign-in (Firebase) → staff check on the server → manage everything.
+   Sign in with Google → staff check on the server → manage everything.
    ========================================================================== */
 (function () {
   "use strict";
@@ -23,13 +23,10 @@
 
   /* ================================================================ Gate */
   const gateBody = $("#gateBody");
-  const GOOGLE_BTN = '<button class="btn-google" id="gSignIn"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 38.2 44 33 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg> Sign in with Google</button>';
+  const GOOGLE_BTN = '<div class="gis-btn" id="gSignIn"></div>';
 
-  function gate(html) { $("#gate").hidden = false; $("#shell").hidden = true; gateBody.innerHTML = html; }
+  function gate(html) { $("#gate").hidden = false; $("#shell").hidden = true; gateBody.innerHTML = html; const b = $("#gSignIn"); if (b) MSI.auth.renderButton(b, { text: "signin_with" }); }
   gateBody.addEventListener("click", async e => {
-    if (e.target.closest("#gSignIn")) {
-      try { await MSI.auth.signIn(); } catch (err) { toast(err.message, "error"); }
-    }
     if (e.target.closest("#gSignOut")) await MSI.auth.signOut();
   });
   gateBody.addEventListener("submit", async e => {
@@ -42,7 +39,7 @@
   });
 
   MSI.auth.ready().then(ok => {
-    if (!ok) gate('<div class="alert alert-warn" style="text-align:left"><i class="fas fa-triangle-exclamation"></i><div><strong>Google Sign-in is not configured.</strong><br>Add the Firebase web config to <code>assets/js/config.js</code> (see README).</div></div>');
+    if (!ok) gate('<div class="alert alert-warn" style="text-align:left"><i class="fas fa-triangle-exclamation"></i><div><strong>Google Sign-in is not configured.</strong><br>Add the Google OAuth Client ID in the database setting <code>google</code> (see README).</div></div>');
   });
   MSI.auth.onChange(user => {
     if (!MSI.auth.configured) return;

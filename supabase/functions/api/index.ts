@@ -1,7 +1,7 @@
 // M.S.I. Inter College — main API (Supabase Edge Function)
 // ---------------------------------------------------------------------------
 // Every read/write from the website goes through this function. It
-//   • verifies Firebase ID tokens (Google Sign-in) for parents and staff,
+//   • verifies Google ID tokens (Sign in with Google) for parents and staff,
 //   • checks staff roles for admin actions,
 //   • talks to Postgres + Storage with the service role (tables have RLS on
 //     and no policies, so the public key cannot touch them directly),
@@ -17,7 +17,7 @@ const FN_BASE = Deno.env.get("SUPABASE_URL")! + "/functions/v1";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type, x-firebase-token, apikey, authorization, x-client-info",
+  "Access-Control-Allow-Headers": "content-type, x-id-token, apikey, authorization, x-client-info",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const json = (body: unknown, status = 200) =>
@@ -52,22 +52,25 @@ const CLASS_GROUP: Record<string, string> = {
 };
 const STREAMS = ["Science (PCM)", "Science (PCB)", "Commerce", "Arts"];
 
-/* ------------------------------------------------- Firebase ID tokens -- */
-const JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"));
+/* -------------------------------------------- Google ID tokens (GIS) -- */
+// Sign-in uses Google Identity Services ("Sign in with Google" + One Tap).
+// The browser sends Google's ID token; we verify its signature, issuer and
+// audience (our OAuth Client ID) against Google's public keys.
+const JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth2/v3/certs"));
 type User = { uid: string; email: string; name: string; picture: string };
 
-async function firebaseUser(req: Request): Promise<User | null> {
-  const token = req.headers.get("x-firebase-token");
+async function googleUser(req: Request): Promise<User | null> {
+  const token = req.headers.get("x-id-token");
   if (!token) return null;
-  const fb = await setting<{ projectId?: string }>("firebase", {});
-  if (!fb.projectId) bad("Google Sign-in is not configured yet", 503);
+  const g = await setting<{ clientId?: string }>("google", {});
+  if (!g.clientId) bad("Google Sign-in is not configured yet", 503);
   try {
     const { payload } = await jwtVerify(token, JWKS, {
-      issuer: "https://securetoken.google.com/" + fb.projectId,
-      audience: fb.projectId,
+      issuer: ["https://accounts.google.com", "accounts.google.com"],
+      audience: g.clientId,
     });
-    if (!payload.sub || !payload.email || payload.email_verified === false) bad("Unverified account", 401);
-    return { uid: String(payload.sub), email: String(payload.email).toLowerCase(), name: String(payload.name ?? ""), picture: String(payload.picture ?? "") };
+    if (!payload.sub || !payload.email || payload.email_verified === false) bad("Unverified Google account", 401);
+    return { uid: "g:" + String(payload.sub), email: String(payload.email).toLowerCase(), name: String(payload.name ?? ""), picture: String(payload.picture ?? "") };
   } catch (e) {
     if (e instanceof HttpError) throw e;
     bad("Session expired — please sign in again", 401);
@@ -75,7 +78,7 @@ async function firebaseUser(req: Request): Promise<User | null> {
   return null;
 }
 async function requireUser(req: Request) {
-  const u = await firebaseUser(req);
+  const u = await googleUser(req);
   if (!u) bad("Please sign in with Google", 401);
   return u!;
 }
@@ -205,7 +208,7 @@ const CRUD: Record<string, string[]> = {
   toppers: ["name", "exam", "stream", "percent", "rank_text", "year", "photo_url", "sort"],
   leaders: ["name", "role", "message", "photo_url", "sort"],
 };
-const PUBLIC_SETTINGS = ["session", "admissions_open", "contact", "ticker", "fees", "stats", "maps", "payment", "firebase", "about"];
+const PUBLIC_SETTINGS = ["session", "admissions_open", "contact", "ticker", "fees", "stats", "maps", "payment", "google", "about"];
 
 /* --------------------------------------------------------------- router -- */
 async function handle(req: Request) {

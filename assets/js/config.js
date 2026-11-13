@@ -10,15 +10,10 @@ window.MSI_CONFIG = {
   API_URL: "https://mfdygxmnhbzmwwvtzwmg.supabase.co/functions/v1/api",
   SUPABASE_PUBLISHABLE_KEY: "sb_publishable_r6a0_Cqc4OHNrb2xHSiTeQ_w7kRa_Ui",
 
-  /* Firebase web config for Google Sign-in (Firebase console → Project
-     settings → Your apps → Web app → SDK setup and configuration).
-     These values are public by design. */
-  FIREBASE: {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    appId: ""
-  },
+  /* Google OAuth Client ID for "Sign in with Google" (Google Cloud Console →
+     APIs & Services → Credentials). Public by design. Also stored in the
+     database setting "google", which takes precedence. */
+  GOOGLE_CLIENT_ID: "910461644511-oaiou7d98p36fgfjs4r7212iosb204k9.apps.googleusercontent.com",
 
   /* Campus location — decoded from the school's official DIGIPIN
      (2J8-MK8-74JF, ±4 m). Admins can override it in Settings → Map. */

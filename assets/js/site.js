@@ -12,6 +12,14 @@
 
   let gallery = [], visible = [], lbIndex = 0, lastFocus = null;
 
+  /* Signed-in parent → avatar in the header links to their dashboard */
+  MSI.auth.onChange(u => {
+    $$('.header-actions a.icon-btn[href^="register.html"]').forEach(a => {
+      if (u) { a.href = "register.html#dashboard"; a.title = u.displayName; a.innerHTML = u.photoURL ? '<img src="' + esc(u.photoURL) + '" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover">' : '<i class="fas fa-user-check"></i>'; }
+      else { a.href = "register.html#login"; a.title = "Student login"; a.innerHTML = '<i class="fas fa-user"></i>'; }
+    });
+  });
+
   MSI.site().then(render).catch(err => {
     console.error(err);
     const nl = $("#noticeList");
