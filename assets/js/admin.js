@@ -443,7 +443,7 @@
     const s = (await api("admin.settings.get")).settings || {};
     const c = s.contact || {}, st = s.stats || {}, fees = s.fees || {}, pay = s.payment || {}, mp = s.maps || {};
     const ro = ROLE !== "admin" ? " disabled" : "";
-    const feeRow = g => '<tr><td><b>' + ({ middle: "Class 6–8", high: "Class 9–10", inter: "Class 11–12" })[g] + '</b></td>' + ["admission", "tuition", "lab", "library"].map(k => '<td><input type="number" min="0" step="1" data-fee="' + g + '.' + k + '" value="' + esc((fees[g] || {})[k] ?? 0) + '"' + ro + '></td>').join("") + '<td data-fee-total="' + g + '"></td></tr>';
+    const formFee = Object.values(fees).map(g => +((g || {}).form || 0)).find(v => v > 0) ?? 0;
     content.innerHTML = (ROLE !== "admin" ? '<div class="alert alert-info" style="margin-bottom:16px"><i class="fas fa-lock"></i><div>Only administrators can change settings.</div></div>' : "") +
       '<div class="adm-settings">' +
       card("Admissions", '<label class="adm-switch"><input type="checkbox" id="sOpen"' + (s.admissions_open !== false ? " checked" : "") + ro + '><span class="track"></span> Online admissions open</label>' +
@@ -455,19 +455,17 @@
         '<div class="field"><label for="pSalt">Salt ' + (s.payuSaltSet ? '<span class="adm-secret-ok"><i class="fas fa-circle-check"></i> saved</span>' : "") + '</label><input id="pSalt" type="password" autocomplete="new-password" placeholder="' + (s.payuSaltSet ? "•••••• (leave blank to keep)" : "Paste salt") + '"' + ro + '></div>' +
         '<p class="adm-note">Key and salt are stored only on the server and are never sent to visitors. After regenerating the salt in PayU, paste the new one here.</p>' +
         '<label class="adm-switch"><input type="checkbox" id="pOffice"' + (pay.officeEnabled !== false ? " checked" : "") + ro + '><span class="track"></span> Allow “Pay at college office”</label>') +
-      '<div class="adm-card" style="grid-column:1/-1"><div class="adm-card-head"><h3>Fee at registration (₹)</h3><span class="adm-note">Applied to new applications. Total is charged online.</span></div><div class="adm-card-body"><div class="adm-table-wrap"><table class="adm-fee-table"><thead><tr><th>Group</th><th>Admission</th><th>Tuition (1st month)</th><th>Lab / computer</th><th>Library &amp; sports</th><th>Total</th></tr></thead><tbody>' +
-        feeRow("middle") + feeRow("high") + feeRow("inter") + '</tbody></table></div></div></div>' +
+      card("Registration fee", '<div class="field"><label for="feeForm">Registration form fee (₹) — same for Classes 6–12</label><input id="feeForm" type="number" min="0" step="1" value="' + esc(formFee) + '"' + ro + '></div>' +
+        '<p class="adm-note">This is the only amount charged online when a parent submits the admission form. It applies to new applications.</p>') +
       card("Contact details", ['phone:Phone', 'whatsapp:WhatsApp number (with 91)', 'email:Email', 'address:Address', 'hours:Office hours'].map(x => { const [k, l] = x.split(":"); return '<div class="field"><label for="c_' + k + '">' + l + '</label><input id="c_' + k + '" value="' + esc(c[k] || "") + '"' + ro + '></div>'; }).join("")) +
       card("Homepage numbers & map", '<div class="form-grid">' + ['founded:Established', 'students:Students', 'teachers:Teachers', 'classrooms:Classrooms'].map(x => { const [k, l] = x.split(":"); return '<div class="field"><label for="st_' + k + '">' + l + '</label><input id="st_' + k + '" value="' + esc(st[k] || "") + '"' + ro + '></div>'; }).join("") +
         '<div class="field"><label for="m_lat">Map latitude</label><input id="m_lat" value="' + esc(mp.lat || "") + '"' + ro + '></div><div class="field"><label for="m_lng">Map longitude</label><input id="m_lng" value="' + esc(mp.lng || "") + '"' + ro + '></div>' +
         '<div class="field full"><label for="m_key">Google Maps API key (optional)</label><input id="m_key" value="' + esc(mp.apiKey || "") + '" placeholder="Leave empty to use the free Google Maps embed"' + ro + '></div></div>') +
       '</div>' + (ROLE === "admin" ? '<div style="position:sticky;bottom:16px;margin-top:18px;display:flex;justify-content:flex-end"><button class="btn btn-gold" id="saveSettings"><i class="fas fa-floppy-disk"></i> Save all settings</button></div>' : "");
-    const totals = () => ["middle", "high", "inter"].forEach(g => { $('[data-fee-total="' + g + '"]').innerHTML = "<b>" + rupee(["admission", "tuition", "lab", "library"].reduce((t, k) => t + (Number($('[data-fee="' + g + "." + k + '"]').value) || 0), 0)) + "</b>"; });
-    $$("[data-fee]").forEach(i => i.addEventListener("input", totals)); totals();
     const save = $("#saveSettings");
     save && save.addEventListener("click", async () => {
-      const feesOut = {};
-      $$("[data-fee]").forEach(i => { const [g, k] = i.dataset.fee.split("."); (feesOut[g] = feesOut[g] || {})[k] = Math.max(0, Math.round(Number(i.value) || 0)); });
+      const ff = Math.max(0, Math.round(Number($("#feeForm").value) || 0));
+      const feesOut = { middle: { form: ff }, high: { form: ff }, inter: { form: ff } };
       const payload = {
         settings: {
           admissions_open: $("#sOpen").checked, session: $("#sSession").value.trim(),
