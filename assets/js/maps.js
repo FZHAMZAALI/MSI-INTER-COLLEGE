@@ -8,9 +8,11 @@
 (function () {
   "use strict";
   const CFG = window.MSI_CONFIG || {};
-  const CAMPUS = CFG.CAMPUS;
-  const KEY = (CFG.GOOGLE_MAPS_API_KEY || "").trim();
+  const CAMPUS = Object.assign({}, CFG.CAMPUS);
+  let KEY = (CFG.GOOGLE_MAPS_API_KEY || "").trim();
   const MAP_ID = (CFG.GOOGLE_MAPS_MAP_ID || "").trim();
+  // Exact coordinates (from the school's DIGIPIN) are used as the destination.
+  const DEST = () => CAMPUS.lat + "," + CAMPUS.lng;
 
   const shell = document.getElementById("mapShell");
   if (!shell || !CAMPUS) return;
@@ -19,7 +21,7 @@
   const info = shell.querySelector(".map-route-info");
 
   const dirUrl = (origin) =>
-    "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(CAMPUS.placeQuery) +
+    "https://www.google.com/maps/dir/?api=1&destination=" + DEST() +
     (origin ? "&origin=" + encodeURIComponent(origin) : "") + "&travelmode=driving";
 
   /* ---------- toolbar ---------- */
@@ -71,7 +73,7 @@
     frame.loading = "lazy";
     frame.referrerPolicy = "no-referrer-when-downgrade";
     frame.allowFullscreen = true;
-    const place = "https://maps.google.com/maps?q=" + encodeURIComponent(CAMPUS.placeQuery) + "&z=16&output=embed";
+    const place = "https://maps.google.com/maps?q=" + DEST() + "&z=17&output=embed";
     frame.src = place;
     canvas.innerHTML = ""; canvas.appendChild(frame);
 
@@ -79,13 +81,13 @@
       (l) => {
         hideInfo();
         frame.src = l
-          ? "https://maps.google.com/maps?saddr=" + encodeURIComponent(l.query) + "&daddr=" + encodeURIComponent(CAMPUS.placeQuery) + "&output=embed"
+          ? "https://maps.google.com/maps?saddr=" + encodeURIComponent(l.query) + "&daddr=" + DEST() + "&output=embed"
           : place;
       },
       async () => {
         try {
           const p = await locate();
-          frame.src = "https://maps.google.com/maps?saddr=" + p.lat + "," + p.lng + "&daddr=" + encodeURIComponent(CAMPUS.placeQuery) + "&output=embed";
+          frame.src = "https://maps.google.com/maps?saddr=" + p.lat + "," + p.lng + "&daddr=" + DEST() + "&output=embed";
         } catch (e) {
           showInfo('<i class="fas fa-circle-info"></i> ' + e.message + ' — <a href="' + dirUrl("") + '" target="_blank" rel="noopener"><strong>open Google Maps</strong></a>');
         }
@@ -135,23 +137,13 @@
       const iw = new g.InfoWindow({
         content:
           '<div style="font-family:Inter,system-ui,sans-serif;max-width:240px;padding:2px">' +
-          '<strong style="font-size:15px;color:#0a3326">मियाँ साहब इस्लामिया इण्टर कॉलेज</strong>' +
+          '<strong style="font-size:15px;color:#0a3326">Miyan Sahab Islamia Inter College</strong>' +
           '<div style="font-size:12.5px;color:#5e6b65;margin:4px 0 8px">M.S.I. Inter College · Est. 1908<br>Bakshipur, Gorakhpur, UP 273001</div>' +
           '<a href="' + dirUrl("") + '" target="_blank" rel="noopener" style="display:inline-block;background:#0f4433;color:#fff;padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;text-decoration:none">Get directions →</a></div>'
       });
       marker.addListener("click", () => iw.open({ map, anchor: marker }));
       setTimeout(() => iw.open({ map, anchor: marker }), 700);
 
-      // Refine the campus position from Google's place data, if Geocoding is enabled.
-      try {
-        const r = await new g.Geocoder().geocode({ address: CAMPUS.placeQuery, region: "in" });
-        const loc = r.results && r.results[0] && r.results[0].geometry.location;
-        if (loc) {
-          const p = { lat: loc.lat(), lng: loc.lng() };
-          // Only accept a result that is plausibly the campus (within ~4 km).
-          if (haversine(center, p) < 4) { center = p; marker.setPosition(p); map.setCenter(p); }
-        }
-      } catch (_) { /* Geocoding API not enabled — keep configured coordinates */ }
 
       const ds = new g.DirectionsService();
       const dr = new g.DirectionsRenderer({
@@ -219,7 +211,15 @@
   }
 
   // Load the map only when it scrolls near the viewport (saves data on mobile).
-  function boot() { KEY ? initJsApi() : initEmbed(); }
+  async function boot() {
+    try {
+      const site = window.MSI ? await MSI.site() : null;
+      const m = (site && site.settings && site.settings.maps) || {};
+      if (m.apiKey) KEY = String(m.apiKey).trim();
+      if (m.lat && m.lng) { CAMPUS.lat = +m.lat; CAMPUS.lng = +m.lng; }
+    } catch (_) {}
+    KEY ? initJsApi() : initEmbed();
+  }
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((entries) => {
       if (entries.some(e => e.isIntersecting)) { io.disconnect(); boot(); }
