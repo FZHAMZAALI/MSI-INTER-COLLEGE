@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admissions Admin | M.S.I. Inter College</title>
+  <meta name="theme-color" content="#0a3326">
+  <link rel="icon" href="assets/img/crest.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="portal-body">
+
+<div class="portal-topbar">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="assets/img/crest.svg" alt="" class="brand-crest" width="42" height="42">
+      <span class="brand-text"><span class="brand-hi">M.S.I. Inter College</span><span class="brand-en">Admissions Admin</span></span>
+    </a>
+    <button class="btn btn-sm btn-ghost-light" id="adminLogout" hidden><i class="fas fa-right-from-bracket"></i> Logout</button>
+  </div>
+</div>
+
+<section class="portal-hero">
+  <div class="container">
+    <span class="eyebrow">Staff only</span>
+    <h1 style="margin-top:12px">Admission registrations</h1>
+    <p>Review online applications, update their status and export to Excel.</p>
+  </div>
+</section>
+
+<main class="portal-main" id="main">
+  <div class="container">
+    <!-- Login -->
+    <section class="card" id="adminLogin" style="max-width:460px;margin:0 auto">
+      <h2 style="font-size:1.4rem;color:var(--emerald-900)"><i class="fas fa-lock" style="color:var(--gold-600)"></i> Staff login</h2>
+      <p style="color:var(--ink-500);font-size:14.5px;margin:6px 0 20px">Enter the admin passcode.</p>
+      <form id="adminLoginForm" novalidate>
+        <div class="field"><label for="adminPass">Passcode</label>
+          <div class="input-icon"><i class="fas fa-key"></i><input id="adminPass" type="password" required autocomplete="current-password"></div>
+          <span class="field-error">Enter the passcode</span></div>
+        <button class="btn btn-block" style="margin-top:16px" type="submit"><i class="fas fa-right-to-bracket"></i> Login</button>
+      </form>
+    </section>
+
+    <!-- Panel -->
+    <section id="adminPanel" hidden>
+      <div id="adminMode"></div>
+      <div class="stat-cards">
+        <div class="stat-card"><small>Total</small><strong id="stTotal">0</strong></div>
+        <div class="stat-card"><small>New</small><strong id="stNew">0</strong></div>
+        <div class="stat-card"><small>Under review</small><strong id="stReview">0</strong></div>
+        <div class="stat-card"><small>Approved</small><strong id="stApproved">0</strong></div>
+      </div>
+
+      <div class="admin-toolbar">
+        <div class="input-icon"><i class="fas fa-magnifying-glass"></i><input class="input" id="q" type="search" placeholder="Search name, ID, mobile, father's name…"></div>
+        <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="submitted">New</option><option value="review">Under review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
+        <select id="fClass" aria-label="Filter by class"><option value="">All classes</option></select>
+        <button class="btn btn-sm btn-outline" id="refreshBtn"><i class="fas fa-rotate"></i> Refresh</button>
+        <button class="btn btn-sm" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Reg. ID</th><th>Student</th><th>Class</th><th>Mobile</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Detail modal -->
+<div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
+  <div class="modal-panel">
+    <div class="modal-head"><h3 id="dmTitle">Application</h3><button class="icon-btn" data-close-modal aria-label="Close"><i class="fas fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="kv" id="dmBody"></div>
+      <div class="form-grid" style="margin-top:22px;padding-top:20px;border-top:1px solid var(--line)">
+        <div class="field"><label for="dmStatus">Update status</label>
+          <select id="dmStatus"><option value="submitted">New / Submitted</option><option value="review">Under review</option><option value="approved">Approved</option><option value="rejected">Not approved</option></select></div>
+        <div class="field"><label for="dmNote">Note to applicant</label><input id="dmNote" maxlength="300" placeholder="e.g. Bring original T.C. on Monday"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-sm btn-outline" id="dmDelete" style="color:var(--danger);border-color:var(--danger);margin-right:auto"><i class="fas fa-trash"></i> Delete</button>
+      <a class="btn btn-sm btn-outline" id="dmWa" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> Message parent</a>
+      <button class="btn btn-sm" id="dmSave"><i class="fas fa-check"></i> Save status</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toasts" aria-live="polite"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
