@@ -1,0 +1,14 @@
+/* Privacy Policy & Terms of Service pages */
+.legal { max-width: 860px; padding-top: 40px; padding-bottom: 72px; }
+.legal-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-600); }
+.legal h1 { font-size: clamp(2rem, 5vw, 2.8rem); color: var(--emerald-900); margin: 6px 0 8px; }
+.legal-meta { color: var(--ink-500); font-size: 14px; padding-bottom: 20px; margin-bottom: 24px; border-bottom: 2px solid var(--gold-500); }
+.legal h2 { font-size: 1.35rem; color: var(--emerald-900); margin: 30px 0 10px; }
+.legal h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 700; margin: 16px 0 6px; color: var(--ink-900); }
+.legal p { margin-bottom: 12px; color: var(--ink-700); }
+.legal ul { list-style: disc; padding-left: 22px; margin: 0 0 12px; color: var(--ink-700); }
+.legal li { margin: 6px 0; }
+.legal a { color: var(--emerald-700); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.legal-contact { padding: 18px 20px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.legal-contact p { margin: 0; }
+.legal-links { margin-top: 28px; font-size: 14px; }
