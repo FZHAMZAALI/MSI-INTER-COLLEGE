@@ -1,0 +1,20 @@
+name = "msi-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+workers_dev = true
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "msi-college"
+database_id = "dbd39da2-070c-4169-8036-8d25568ec47f"
+
+[[r2_buckets]]
+binding = "DOCS"
+bucket_name = "msi-applicant-docs"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "msi-site-media"

@@ -141,7 +141,8 @@
   }
   async function upload(file, folder, maxDim) {
     const data = await fileToData(file, maxDim);
-    return (await api("admin.upload", { folder, file: data })).url;
+    const t = await api("admin.uploadTicket", { folder });
+    return (await MSI.putDataUrl(t.uploadUrl, data)).url;
   }
   function csv(rows, cols, name) {
     const cell = v => { let s = String(v == null ? "" : v); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
@@ -154,7 +155,7 @@
 
   /* =========================================================== Dashboard */
   async function pageDashboard() {
-    const [s, list] = await Promise.all([api("admin.stats"), api("admin.apps.list")]);
+    const [s, list, store] = await Promise.all([api("admin.stats"), api("admin.apps.list"), api("admin.storage").catch(() => null)]);
     const apps = s.apps;
     const paid = apps.filter(a => a.payment_status === "paid");
     const collected = paid.reduce((t, a) => t + (a.fee_total || 0), 0);
@@ -180,9 +181,18 @@
       '<div class="adm-card"><div class="adm-card-head"><h3>By class</h3></div><div class="adm-card-body"><div class="adm-bars">' +
       byClass.map(b => '<div class="adm-bar"><span>' + b[0] + '</span><div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round(b[1] / max * 100) + '%"></div></div><b>' + b[1] + '</b></div>').join("") +
       '</div></div></div></div>' +
+      (store ? storageCard(store) : "") +
       '<div class="adm-card" style="margin-top:18px"><div class="adm-card-head"><h3>Recent applications</h3><a class="btn btn-xs btn-outline" href="#applications">View all</a></div>' +
       (recent.length ? appTable(recent) : '<div class="adm-empty"><i class="fas fa-inbox"></i>No applications yet. Share the registration link: <b>' + esc(location.origin + location.pathname.replace("admin.html", "register.html")) + '</b></div>') + '</div>';
     bindAppRows();
+  }
+  function storageCard(st) {
+    const used = st.docs + st.media, pct = Math.min(100, used / st.limit * 100);
+    const mb = n => (n / 1048576).toFixed(n < 10485760 ? 2 : 0) + " MB";
+    return '<div class="adm-card" style="margin-top:18px"><div class="adm-card-head"><h3><i class="fas fa-hard-drive" style="color:var(--emerald-700)"></i> File storage</h3>' +
+      '<span class="adm-note">' + mb(used) + ' of 10 GB free plan · ' + st.count + ' files</span></div><div class="adm-card-body">' +
+      '<div class="adm-bar-track" style="height:12px"><div class="adm-bar-fill" style="width:' + Math.max(pct, 0.5).toFixed(2) + '%;' + (pct > 80 ? "background:var(--danger)" : "") + '"></div></div>' +
+      '<p class="adm-note" style="margin-top:8px">Applicant documents ' + mb(st.docs) + ' · Website photos ' + mb(st.media) + (pct > 80 ? ' · <b style="color:var(--danger)">Storage is over 80% — archive old session documents.</b>' : "") + '</p></div></div>';
   }
   const kpi = (icon, label, value, sub, cls) => '<div class="adm-kpi ' + (cls || "") + '"><i class="fas ' + icon + '"></i><small>' + label + '</small><strong>' + esc(value) + '</strong><span>' + esc(sub) + '</span></div>';
 

@@ -1,7 +1,7 @@
 # M.S.I. Inter College — Website & Admission Portal
 
 Official website of **Miyan Sahab Islamia Inter College**, Bakshipur, Gorakhpur (est. 1908).
-Static frontend (no build step) + Supabase backend + Sign in with Google (Google Identity Services) + PayU payments.
+Static frontend (no build step) on Cloudflare Pages + Cloudflare Worker API (D1 database, R2 storage) + Sign in with Google + PayU payments. Everything runs on free plans that never pause.
 
 ## Pages
 
@@ -14,26 +14,29 @@ Static frontend (no build step) + Supabase backend + Sign in with Google (Google
 ## Architecture
 
 ```
-Browser ──► Google Identity Services (button + One Tap) ──► Google ID token
-   │
-   └──► Supabase Edge Function `api`  (verifies the Google token, checks staff role)
-            ├── Postgres tables (RLS on, no public policies — only the API can read/write)
-            ├── Storage: applicant-docs (private, signed URLs) · site-media (public)
-            └── PayU: hash computed server-side; `payu` function verifies the callback
-                with the reverse hash + PayU verify_payment API before marking "Paid".
+Browser (msi-inter-college.pages.dev)
+   ├──► Google Identity Services (button + One Tap) ──► Google ID token
+   └──► Cloudflare Worker `msi-api`  (cloudflare/src/index.ts)
+            ├── verifies the Google token (RS256, Google public keys) and staff role
+            ├── D1 database `msi-college`      — applications, payments, settings, content
+            ├── R2 `msi-applicant-docs` (private) — served only via signed, expiring links
+            ├── R2 `msi-site-media` (public)       — gallery / notice / topper images
+            ├── PUT /upload — files go straight to R2 using signed, short-lived tickets
+            └── PayU: hash computed in the Worker; /payu callback checks the reverse hash
+                and PayU's verify_payment API before marking a fee "Paid".
 ```
 
-- Supabase project: `msi-inter-college` (ap-south-1)
-- Edge functions: `supabase/functions/api`, `supabase/functions/payu`
-- Schema: `supabase/migrations/`
-- PayU key/salt live only in the `app_secrets` table (server-side). Update them in Admin → Settings.
+- Worker config: `cloudflare/wrangler.toml` · schema: `cloudflare/schema.sql`
+- Secrets: `SIGNING_KEY` (Worker secret); PayU key/salt in the D1 `app_secrets` table — edit in Admin → Settings.
+- Free-plan limits: Workers 100k requests/day, D1 5 GB, R2 10 GB (storage meter on the admin dashboard).
+- Deploy the API: `cd cloudflare && npx wrangler deploy` · Deploy the site: `npx wrangler pages deploy <site-folder> --project-name msi-inter-college`
 
 ## One-time setup
 
 ### 1. Sign in with Google (Google Cloud)
 Project `msi-inter-college` in Google Cloud Console already has an OAuth **Web** client.
 - **APIs & Services → Credentials → OAuth client → Authorized JavaScript origins**: list every
-  domain the site is served from (currently `https://msiintercollege.vercel.app`). Add a custom
+  domain the site is served from (`https://msi-inter-college.pages.dev`, and any custom domain). Add a custom
   domain here too if you add one.
 - **OAuth consent screen**: app name, logo and support email are what parents see; keep it **Published**.
 - The Client ID lives in the database setting `google` (`{"clientId": "…"}`) and in `assets/js/config.js`.
