@@ -4,9 +4,9 @@
    managed from the Admin Panel and stored in the database — not here.
    ========================================================================== */
 window.MSI_CONFIG = {
-  /* Backend: Cloudflare Worker "msi-api" (D1 database + R2 storage).
-     Every request is checked on the server; this URL is public by design. */
-  API_URL: "https://msi-api.techzone895.workers.dev/api",
+  /* Backend: Cloudflare Worker "msi-api" (D1 database + R2 storage), served
+     from the website's own domain through Pages Functions (functions/). */
+  API_URL: "https://msi-inter-college.pages.dev/api",
 
   /* Google OAuth Client ID for "Sign in with Google" (Google Cloud Console →
      APIs & Services → Credentials). Public by design. Also stored in the

@@ -16,7 +16,8 @@ Static frontend (no build step) on Cloudflare Pages + Cloudflare Worker API (D1 
 ```
 Browser (msi-inter-college.pages.dev)
    ├──► Google Identity Services (button + One Tap) ──► Google ID token
-   └──► Cloudflare Worker `msi-api`  (cloudflare/src/index.ts)
+   └──► /api, /auth/google, /upload, /media, /doc, /payu on the site's own domain
+        (Pages Functions in functions/ → service binding) ──► Worker `msi-api` (cloudflare/src/index.ts)
             ├── verifies the Google token (RS256, Google public keys) and staff role
             ├── D1 database `msi-college`      — applications, payments, settings, content
             ├── R2 `msi-applicant-docs` (private) — served only via signed, expiring links
@@ -29,7 +30,9 @@ Browser (msi-inter-college.pages.dev)
 - Worker config: `cloudflare/wrangler.toml` · schema: `cloudflare/schema.sql`
 - Secrets: `SIGNING_KEY` (Worker secret); PayU key/salt in the D1 `app_secrets` table — edit in Admin → Settings.
 - Free-plan limits: Workers 100k requests/day, D1 5 GB, R2 10 GB (storage meter on the admin dashboard).
-- Deploy the API: `cd cloudflare && npx wrangler deploy` · Deploy the site: `npx wrangler pages deploy <site-folder> --project-name msi-inter-college`
+- The Worker has no public workers.dev URL; it is reached only through the Pages service binding `API`.
+- Deploy the API: `cd cloudflare && npx wrangler deploy` · Deploy the site (run from the repo root so `functions/` is included): `npx wrangler pages deploy <site-folder> --project-name msi-inter-college`
+- Google OAuth client → Authorized redirect URI: `https://msi-inter-college.pages.dev/auth/google`
 
 ## One-time setup
 
