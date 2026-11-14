@@ -1,6 +1,6 @@
 /* ==========================================================================
    API client + Sign in with Google (Google Identity Services)
-   window.MSI.api(action, payload)  → calls the Supabase `api` function
+   window.MSI.api(action, payload)  → calls the Cloudflare Worker API
    window.MSI.auth                   → Google Sign-in button + One Tap
    window.MSI.site()                 → public site data (settings, notices…)
    ========================================================================== */
@@ -13,7 +13,7 @@
 
   /* ---------- API ---------- */
   async function api(action, payload, opts) {
-    const headers = { "Content-Type": "application/json", apikey: CFG.SUPABASE_PUBLISHABLE_KEY };
+    const headers = { "Content-Type": "application/json" };
     if (!(opts && opts.anonymous) && currentUser) headers["x-id-token"] = currentUser.token;
     let res;
     try {
@@ -27,6 +27,17 @@
     if (!data || !data.ok) throw new Error((data && data.error) || "Server error (" + res.status + ")");
     return data;
   }
+  /* Upload a data: URL (already compressed in the browser) to a signed upload URL. */
+  async function putDataUrl(uploadUrl, dataUrl) {
+    const blob = await (await fetch(dataUrl)).blob();
+    let res;
+    try { res = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": blob.type }, body: blob }); }
+    catch (_) { throw new Error("Upload failed — please check your internet and retry."); }
+    const data = await res.json().catch(() => null);
+    if (!data || !data.ok) throw new Error((data && data.error) || "Upload failed (" + res.status + ")");
+    return data;
+  }
+
   function site(force) {
     if (!sitePromise || force) sitePromise = api("public.site", {}, { anonymous: true });
     return sitePromise;
@@ -119,5 +130,5 @@
     }
   };
 
-  window.MSI = { api, site, auth, config: CFG };
+  window.MSI = { api, site, auth, putDataUrl, config: CFG };
 })();

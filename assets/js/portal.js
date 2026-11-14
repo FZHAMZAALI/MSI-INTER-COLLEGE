@@ -202,8 +202,11 @@
     if (!$("#declare").checked) return toast("Please accept the declaration.", "error");
     busy(nextBtn, true, "Uploading & submitting…");
     try {
+      // 1) get signed upload links, 2) upload each file straight to storage, 3) submit the form
+      const kinds = ["photo", "marksheet", "aadhaarDoc", "tc", "birthCert"].filter(k => uploads[k]);
+      const t = await MSI.api("apps.uploadTickets", { kinds });
       const files = {};
-      ["photo", "marksheet", "aadhaarDoc", "tc", "birthCert"].forEach(k => { if (uploads[k]) files[k] = uploads[k]; });
+      for (const k of kinds) files[k] = (await MSI.putDataUrl(t.tickets[k].uploadUrl, uploads[k])).key;
       const r = await MSI.api("apps.submit", { data: collect(), files });
       const app = Object.assign(r.application, { photoUrl: uploads.photo });
       toast("Application submitted · Registration ID " + app.regId);

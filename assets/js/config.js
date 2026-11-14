@@ -4,11 +4,9 @@
    managed from the Admin Panel and stored in the database — not here.
    ========================================================================== */
 window.MSI_CONFIG = {
-  /* Backend (Supabase project "msi-inter-college"). The publishable key is
-     safe to expose: tables are locked by Row Level Security and every
-     request goes through the server-side API, which checks the user. */
-  API_URL: "https://mfdygxmnhbzmwwvtzwmg.supabase.co/functions/v1/api",
-  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_r6a0_Cqc4OHNrb2xHSiTeQ_w7kRa_Ui",
+  /* Backend: Cloudflare Worker "msi-api" (D1 database + R2 storage).
+     Every request is checked on the server; this URL is public by design. */
+  API_URL: "https://msi-api.techzone895.workers.dev/api",
 
   /* Google OAuth Client ID for "Sign in with Google" (Google Cloud Console →
      APIs & Services → Credentials). Public by design. Also stored in the
