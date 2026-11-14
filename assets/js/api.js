@@ -87,6 +87,8 @@
     await loadGis();
     google.accounts.id.initialize({
       client_id: clientId,
+      ux_mode: "redirect",                                       // button opens Google in the same tab
+      login_uri: CFG.API_URL.replace(/\/api$/, "") + "/auth/google",
       callback: resp => { const u = userFromToken(resp.credential); if (u) setUser(u); },
       auto_select: true,                // returning users are signed in silently
       cancel_on_tap_outside: true,
@@ -113,6 +115,8 @@
       const ok = await initPromise;
       if (!ok || !el) return false;
       el.innerHTML = "";
+      // Remember where to come back to after the same-tab Google sign-in.
+      try { sessionStorage.setItem("msi.returnTo", location.pathname + location.search + location.hash); } catch (_) {}
       google.accounts.id.renderButton(el, Object.assign({
         type: "standard", theme: "outline", size: "large", shape: "pill", text: "signin_with",
         logo_alignment: "left", width: Math.min(360, el.clientWidth || 320)
