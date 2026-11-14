@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Signing in… | M.S.I. Inter College</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0a3326; color: #fff; font: 16px Inter, system-ui, sans-serif; text-align: center; }
+    .box { padding: 24px; }
+    .spin { width: 42px; height: 42px; margin: 0 auto 16px; border: 4px solid rgba(255,255,255,.2); border-top-color: #ddb45a; border-radius: 50%; animation: s 0.8s linear infinite; }
+    @keyframes s { to { transform: rotate(360deg); } }
+    a { color: #ddb45a; }
+  </style>
+</head>
+<body>
+  <div class="box" id="box"><div class="spin"></div>Signing you in…</div>
+  <script>
+    /* Return point of the same-tab "Sign in with Google" flow.
+       The verified Google ID token arrives in the URL fragment (never sent to a server). */
+    (function () {
+      var q = new URLSearchParams(location.hash.slice(1));
+      history.replaceState(null, "", location.pathname);           // remove the token from the address bar
+      var back = "register.html";
+      try {
+        var r = sessionStorage.getItem("msi.returnTo") || "";
+        if (/^\/[A-Za-z0-9_\-./]*([?#][^<>"\s]*)?$/.test(r) && r.indexOf("//") === -1 && !/^\/auth/.test(r)) back = r;
+        sessionStorage.removeItem("msi.returnTo");
+      } catch (e) {}
+      if (q.get("credential")) {
+        try { localStorage.setItem("msi.gid.v1", q.get("credential")); } catch (e) {}
+        location.replace(back);
+      } else {
+        document.getElementById("box").innerHTML = "Sign-in failed: " + (q.get("error") || "unknown error").replace(/[<>&]/g, "") +
+          '<br><br><a href="' + back.replace(/"/g, "") + '">Try again</a>';
+      }
+    })();
+  </script>
+</body>
+</html>

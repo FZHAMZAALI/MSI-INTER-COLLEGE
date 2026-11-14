@@ -73,6 +73,9 @@ async function googleKeys() {
 async function googleUser(env: Env, req: Request): Promise<User | null> {
   const token = req.headers.get("x-id-token");
   if (!token) return null;
+  return verifyIdToken(env, token);
+}
+async function verifyIdToken(env: Env, token: string): Promise<User> {
   const g = await setting<{ clientId?: string }>(env, "google", {});
   if (!g.clientId) bad("Google Sign-in is not configured yet", 503);
   const parts = token.split(".");
@@ -301,6 +304,23 @@ async function payuCallback(env: Env, req: Request) {
     : { payment_status: result === "failure" ? "failed" : "pending" };
   await addHistory(env, pay.reg_id, { status: a?.status, note }, fields);
   return back(result);
+}
+
+/* ------------------------------------------- Sign-in redirect (same tab) -- */
+// "Sign in with Google" in redirect mode: Google POSTs the ID token here, we
+// verify it and send the browser back to the website (token in the URL
+// fragment, which is never sent to any server).
+async function googleRedirect(env: Env, req: Request) {
+  const g = await setting<{ siteUrl?: string }>(env, "google", {});
+  const site = (g.siteUrl || "https://msi-inter-college.pages.dev").replace(/\/+$/, "");
+  const form = await req.formData().catch(() => null);
+  const credential = String(form?.get("credential") || "");
+  try {
+    await verifyIdToken(env, credential);
+    return Response.redirect(site + "/auth.html#credential=" + encodeURIComponent(credential), 303);
+  } catch (e) {
+    return Response.redirect(site + "/auth.html#error=" + encodeURIComponent(e instanceof Error ? e.message : "Sign-in failed"), 303);
+  }
 }
 
 /* ------------------------------------------------------------- admin -- */
@@ -568,6 +588,7 @@ export default {
     try {
       if (url.pathname === "/api" && req.method === "POST") return json({ ok: true, ...(await handle(env, req, base)) });
       if (url.pathname === "/payu" && req.method === "POST") return await payuCallback(env, req);
+      if (url.pathname === "/auth/google" && req.method === "POST") return await googleRedirect(env, req);
       if (url.pathname === "/upload" && req.method === "PUT") return json({ ok: true, ...(await handleUpload(env, req, url)) });
       if (url.pathname.startsWith("/media/") && req.method === "GET") return serveObject(env.MEDIA, decodeURIComponent(url.pathname.slice(7)), true);
       if (url.pathname.startsWith("/doc/") && req.method === "GET") {
